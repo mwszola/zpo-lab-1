@@ -209,8 +209,6 @@ public class MainFrame {
                         for (Map.Entry<String, Long> entry : countedWords.entrySet()) {
                             System.out.println("\"" + entry.getKey() + "\": " + entry.getValue());
                         }
-                    } else {
-                        break;
                     }
                 } catch (InterruptedException | IOException e) {
                     info = String.format("Oczekiwanie konsumenta %s na nowy element z kolejki przerwane!", name);
@@ -238,13 +236,11 @@ public class MainFrame {
      * Metoda zwraca najczęściej występujące słowa we wskazanym pliku tekstowym
      */
     private Map<String, Long> getLinkedCountedWords(Path path, int wordsLimit) throws IOException {
-        //konstrukcja 'try-with-resources' - z automatycznym zamykaniem strumienia/źródła danych
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             return reader.lines()
-                    .flatMap(line -> Stream.of(line.split("\\s+"))) // podzial linii zgodnie z podanym
-//                    .peek(System.out::println)
+                    .flatMap(line -> Stream.of(line.split("\\s+"))) // podzial linii zgodnie z podanym wzorcem
                     .filter(word -> word.matches("[a-zA-Z]{3,}")) // tylko slowa z przynajmniej 3 literami
-                    .map(String::toLowerCase)
+                    .map(String::toLowerCase) // zamian na male litery
                     .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                     .entrySet()
                     .stream()
